@@ -180,19 +180,13 @@
                 <p style="color:var(--text-light)">No QR code uploaded yet.</p>
               </div>
             </div>
-            <div class="qr-upload-area" id="qr-drop-area">
-              <div class="upload-icon">📷</div>
-              <h3>Upload New QR Code</h3>
-              <p>Click to select or drag & drop a QR code image<br><small style="color:var(--text-light)">PNG, JPG
-                  supported — max 5MB</small></p>
-              <input type="file" id="qr-file-input" accept="image/*" style="display:none">
-              <button class="btn-primary" onclick="document.getElementById('qr-file-input').click()">Choose
-                File</button>
-            </div>
-            <div id="qr-preview-wrap" style="display:none;text-align:center;margin-top:20px">
-              <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px">Preview:</p>
-              <img id="qr-preview" class="qr-preview" src="" alt="QR Preview">
-              <div style="margin-top:16px"><button class="btn-primary" id="upload-qr-btn">Save QR Code</button></div>
+            <div class="admin-form-group">
+              <label>Enter QR Code Image URL</label>
+              <div style="display:flex;gap:12px;margin-top:8px">
+                <input type="url" id="qr-url-input" placeholder="https://example.com/your-qr.png" style="flex:1">
+                <button class="btn-primary" id="save-qr-btn">Save URL</button>
+              </div>
+              <p style="font-size:12px;color:var(--text-light);margin-top:8px">Tip: You can upload your image to Imgur or PostImages and paste the direct link here.</p>
             </div>
             <div class="auth-error" id="qr-error" style="margin-top:16px"></div>
             <div class="auth-success" id="qr-success" style="margin-top:16px"></div>
@@ -477,69 +471,49 @@
         const el = document.getElementById("qr-current-img");
         if (snap.exists() && snap.data().qrUrl) {
           el.innerHTML = `<img src="${snap.data().qrUrl}" style="max-width:200px;max-height:200px;border-radius:12px">`;
+          document.getElementById("qr-url-input").value = snap.data().qrUrl;
         } else {
-          el.innerHTML = `<p style="color:var(--text-light)">No QR code uploaded yet.</p>`;
+          el.innerHTML = `<p style="color:var(--text-light)">No QR code set yet.</p>`;
         }
       } catch (e) {
         console.warn("QR load:", e);
       }
     }
 
-    const qrInput = document.getElementById("qr-file-input");
-    const qrPreview = document.getElementById("qr-preview");
-    const qrPreviewWrap = document.getElementById("qr-preview-wrap");
-    let qrFile = null;
+    document.getElementById("save-qr-btn").addEventListener("click", async () => {
+      const url = document.getElementById("qr-url-input").value.trim();
+      const err = document.getElementById("qr-error");
+      const success = document.getElementById("qr-success");
+      err.textContent = "";
+      success.textContent = "";
 
-    qrInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      if (file.size > 5 * 1024 * 1024) {
-        document.getElementById("qr-error").textContent = "File is too large. Max 5MB.";
-        document.getElementById("qr-error").style.display = "block";
+      if (!url) {
+        err.textContent = "Please enter a valid URL.";
         return;
       }
-      qrFile = file;
-      const reader = new FileReader();
-      reader.onload = (r) => { qrPreview.src = r.target.result; qrPreviewWrap.style.display = "block"; };
-      reader.readAsDataURL(file);
-      document.getElementById("qr-error").style.display = "none";
-    });
 
-    const dropArea = document.getElementById("qr-drop-area");
-    dropArea.addEventListener("dragover", e => { e.preventDefault(); dropArea.style.borderColor = "var(--green)"; });
-    dropArea.addEventListener("dragleave", () => { dropArea.style.borderColor = ""; });
-    dropArea.addEventListener("drop", e => {
-      e.preventDefault(); dropArea.style.borderColor = "";
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith("image/")) {
-        qrFile = file;
-        const reader = new FileReader();
-        reader.onload = r => { qrPreview.src = r.target.result; qrPreviewWrap.style.display = "block"; };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    document.getElementById("upload-qr-btn").addEventListener("click", async () => {
-      if (!qrFile) return;
-      const btn = document.getElementById("upload-qr-btn");
-      const errEl = document.getElementById("qr-error");
-      const sucEl = document.getElementById("qr-success");
-      btn.textContent = "Uploading..."; btn.disabled = true;
-      errEl.style.display = "none"; sucEl.style.display = "none";
       try {
-        const storageRef = ref(storage, `settings/payment-qr-${Date.now()}.${qrFile.name.split(".").pop()}`);
-        const snap = await uploadBytes(storageRef, qrFile);
-        const url = await getDownloadURL(snap.ref);
-        await setDoc(doc(db, "settings", "payment"), { qrUrl: url, updatedAt: serverTimestamp() }, { merge: true });
-        sucEl.textContent = "QR code uploaded successfully! It is now live on the checkout page.";
-        sucEl.style.display = "block";
-        document.getElementById("qr-current-img").innerHTML = `<img src="${url}" style="max-width:200px;max-height:200px;border-radius:12px">`;
+        const btn = document.getElementById("save-qr-btn");
+        btn.disabled = true;
+        btn.textContent = "Saving...";
+
+        await setDoc(doc(db, "settings", "payment"), {
+          qrUrl: url,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        success.textContent = "QR Code URL saved successfully!";
+        loadCurrentQR();
       } catch (e) {
-        errEl.textContent = "Upload failed: " + e.message;
-        errEl.style.display = "block";
+        err.textContent = "Error saving: " + e.message;
+      } finally {
+        const btn = document.getElementById("save-qr-btn");
+        btn.disabled = false;
+        btn.textContent = "Save URL";
       }
-      btn.textContent = "Save QR Code"; btn.disabled = false;
     });
+
+    /* Removed File Upload Logic — using URL input to avoid Storage costs */
 
     // ============ PRODUCTS ============
     function renderProductsAdmin() {
