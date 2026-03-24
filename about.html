@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Yuki</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Cinzel:wght@400;600;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav id="navbar">
+  <div class="nav-logo-text"><a href="index.html"><span class="logo-yuki">Yuki</span></a><span class="logo-tagline">Natural · Organic · Pure</span></div>
+  <ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="products.html">Products</a></li><li><a href="about.html" class="active">About</a></li></ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-badge" id="cart-badge">0</span></a>
+    <div id="nav-auth"><a href="login.html" class="btn-nav-login">Login</a></div>
+    <div id="nav-user" style="display:none"><span id="nav-username" class="nav-username"></span><button class="btn-nav-logout" id="logout-btn">Logout</button></div>
+  </div>
+  <button class="nav-mobile-toggle" id="mobile-toggle">☰</button>
+</nav>
+<div class="mobile-menu" id="mobile-menu"><a href="index.html">Home</a><a href="products.html">Products</a><a href="about.html">About</a><a href="cart.html">Cart</a><a href="login.html" id="mobile-login">Login</a><a href="#" id="mobile-logout" style="display:none">Logout</a></div>
+
+<main style="padding-top:72px">
+  <section style="background:linear-gradient(135deg,var(--white),var(--green-pale));padding:100px 0;text-align:center">
+    <div class="container">
+      <p class="section-eyebrow reveal">Our Story</p>
+      <h1 class="reveal" style="max-width:700px;margin:0 auto 24px">Ancient wisdom for <em>modern</em> wellness</h1>
+      <p class="reveal" style="font-size:20px;color:var(--text-muted);max-width:600px;margin:0 auto">YUKI is dedicated to bringing the purest, most authentic natural products from ancient traditions to your daily life.</p>
+    </div>
+  </section>
+
+  <section style="padding:100px 0;background:var(--white)">
+    <div class="container" style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+      <div class="reveal">
+        <p class="section-eyebrow">Our Mission</p>
+        <h2 style="margin-bottom:20px">What we <em>stand for</em></h2>
+        <p style="font-size:16px;color:var(--text-muted);line-height:1.9;margin-bottom:20px">YUKI is an organic brand dedicated to providing natural, healthy, and sustainable products. We focus on pure ingredients such as bamboo salt, organic spices, herbal products, and natural wellness items.</p>
+        <p style="font-size:16px;color:var(--text-muted);line-height:1.9">Our mission is to promote healthy living while protecting the planet. Every product we make is crafted with care, using only the finest natural ingredients sourced ethically and sustainably.</p>
+      </div>
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div style="background:var(--cream);border-radius:20px;padding:36px 24px;text-align:center;border:1px solid var(--border)"><div style="font-size:40px;margin-bottom:12px">🌿</div><h3 style="font-size:20px;margin-bottom:8px">Natural</h3><p style="font-size:14px;color:var(--text-muted)">Zero artificial ingredients, ever</p></div>
+        <div style="background:var(--cream);border-radius:20px;padding:36px 24px;text-align:center;border:1px solid var(--border)"><div style="font-size:40px;margin-bottom:12px">🔬</div><h3 style="font-size:20px;margin-bottom:8px">Tested</h3><p style="font-size:14px;color:var(--text-muted)">Lab-certified quality and purity</p></div>
+        <div style="background:var(--cream);border-radius:20px;padding:36px 24px;text-align:center;border:1px solid var(--border)"><div style="font-size:40px;margin-bottom:12px">🌱</div><h3 style="font-size:20px;margin-bottom:8px">Sustainable</h3><p style="font-size:14px;color:var(--text-muted)">Eco-friendly sourcing and packaging</p></div>
+        <div style="background:var(--cream);border-radius:20px;padding:36px 24px;text-align:center;border:1px solid var(--border)"><div style="font-size:40px;margin-bottom:12px">❤️</div><h3 style="font-size:20px;margin-bottom:8px">Ethical</h3><p style="font-size:14px;color:var(--text-muted)">Fair-trade and community-first</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:100px 0;background:var(--off-white);text-align:center">
+    <div class="container">
+      <p class="section-eyebrow reveal">The Process</p>
+      <h2 class="reveal" style="margin-bottom:60px">How Bamboo Salt is Made</h2>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;max-width:900px;margin:0 auto" class="reveal">
+        <div style="padding:20px 10px;text-align:center"><div style="font-size:40px;margin-bottom:12px">🌊</div><h4 style="font-size:14px;margin-bottom:6px">Sea Salt</h4><p style="font-size:12px;color:var(--text-muted)">Pure sea salt harvested</p></div>
+        <div style="padding:20px 10px;text-align:center;font-size:28px;display:flex;align-items:center;justify-content:center;color:var(--green)">→</div>
+        <div style="padding:20px 10px;text-align:center"><div style="font-size:40px;margin-bottom:12px">🎋</div><h4 style="font-size:14px;margin-bottom:6px">Bamboo</h4><p style="font-size:12px;color:var(--text-muted)">Packed in fresh bamboo</p></div>
+        <div style="padding:20px 10px;text-align:center;font-size:28px;display:flex;align-items:center;justify-content:center;color:var(--green)">→</div>
+        <div style="padding:20px 10px;text-align:center"><div style="font-size:40px;margin-bottom:12px">🔥</div><h4 style="font-size:14px;margin-bottom:6px">Roasted</h4><p style="font-size:12px;color:var(--text-muted)">Pine fire at 1,300°C</p></div>
+      </div>
+      <p style="font-size:16px;color:var(--text-muted);max-width:600px;margin:40px auto 0;line-height:1.8">This process is repeated up to 9 times, with each cycle purifying the salt further, concentrating over 70 essential minerals, and developing the characteristic colour that indicates the roast level.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand"><span class="footer-logo">Yuki</span><p class="footer-tagline">Natural · Organic · Pure</p><p>Bringing ancient wisdom to modern wellness.</p></div>
+    <div class="footer-col"><h4>Products</h4><ul><li><a href="products.html">All Products</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Contact</a></li><li><a href="orders.html">My Orders</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 Yuki Herbal Energy.</span><span class="footer-tagline-bottom">go greeeennnn.....</span></div>
+</footer>
+
+<script type="module">
+import { initAuth } from "./auth.js";
+import { updateCartBadge } from "./cart-utils.js";
+initAuth();
+updateCartBadge();
+const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add("visible"); }), {threshold:0.1});
+document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

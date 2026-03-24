@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Yuki</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Cinzel:wght@400;600;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav id="navbar">
+  <div class="nav-logo-text"><a href="index.html"><span class="logo-yuki">Yuki</span></a><span class="logo-tagline">Natural · Organic · Pure</span></div>
+  <ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="products.html">Products</a></li></ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-badge" id="cart-badge">0</span></a>
+    <div id="nav-auth"><a href="login.html" class="btn-nav-login">Login</a></div>
+    <div id="nav-user"><span id="nav-username" class="nav-username"></span><button class="btn-nav-logout" id="logout-btn">Logout</button></div>
+  </div>
+  <button class="nav-mobile-toggle" id="mobile-toggle">&#9776;</button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a><a href="products.html">Products</a><a href="cart.html">Cart</a>
+  <a href="login.html" id="mobile-login">Login</a><a href="#" id="mobile-logout" style="display:none">Logout</a>
+</div>
+
+<main class="checkout-page">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>&#8250;</span><a href="cart.html">Cart</a><span>&#8250;</span><span>Checkout</span></div>
+    <h1 style="margin-bottom:36px">Checkout</h1>
+    <div class="checkout-layout">
+
+      <!-- LEFT: Address + Payment confirm -->
+      <div class="checkout-left">
+        <div class="checkout-section">
+          <h2>Shipping Address</h2>
+          <div class="form-row">
+            <div class="form-group"><label>First Name *</label><input type="text" class="form-control" id="fname" placeholder="First name" autocomplete="given-name"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" class="form-control" id="lname" placeholder="Last name" autocomplete="family-name"></div>
+          </div>
+          <div class="form-group"><label>Email *</label><input type="email" class="form-control" id="email" placeholder="your@email.com" autocomplete="email"></div>
+          <div class="form-group"><label>Phone *</label><input type="tel" class="form-control" id="phone" placeholder="10-digit mobile number" maxlength="10" autocomplete="tel"></div>
+          <div class="form-group"><label>Address Line 1 *</label><input type="text" class="form-control" id="addr1" placeholder="House / Flat No, Street Name" autocomplete="address-line1"></div>
+          <div class="form-group"><label>Address Line 2 <span style="font-weight:400;color:var(--text-light)">(optional)</span></label><input type="text" class="form-control" id="addr2" placeholder="Area, Landmark" autocomplete="address-line2"></div>
+          <div class="form-row">
+            <div class="form-group"><label>City *</label><input type="text" class="form-control" id="city" placeholder="City" autocomplete="address-level2"></div>
+            <div class="form-group"><label>State *</label><input type="text" class="form-control" id="state" placeholder="State" autocomplete="address-level1"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>PIN Code *</label><input type="text" class="form-control" id="pincode" placeholder="6-digit PIN" maxlength="6" autocomplete="postal-code"></div>
+            <div class="form-group"><label>Country</label><input type="text" class="form-control" id="country" value="India" readonly style="background:var(--cream)"></div>
+          </div>
+        </div>
+
+        <div class="checkout-section">
+          <h2>Payment</h2>
+          <div class="payment-confirm-note">
+            &#128241; <strong>UPI / QR Payment</strong><br>
+            Scan the QR code on the right with any UPI app (GPay, PhonePe, Paytm, etc.) and pay the exact order total shown. After payment, enter your UTR / Transaction ID below and tap <strong>Place Order</strong>.
+          </div>
+          <div class="form-group">
+            <label>UTR / Transaction ID *</label>
+            <input type="text" class="form-control" id="utr" placeholder="Enter your UPI transaction reference number">
+            <p class="form-hint">You can find this in your UPI app under payment history.</p>
+          </div>
+        </div>
+
+        <div class="auth-error" id="error-box"></div>
+        <button class="btn-primary" id="place-order-btn" style="width:100%;justify-content:center;font-size:16px;padding:18px">
+          Place Order
+        </button>
+      </div>
+
+      <!-- RIGHT: QR code + order summary -->
+      <div class="checkout-right">
+        <div class="qr-section">
+          <h3>Scan &amp; Pay</h3>
+          <p>Use any UPI app to scan and pay</p>
+          <div class="qr-image-wrap" id="qr-wrap">
+            <div class="qr-no-image">
+              <span>&#128241;</span>
+              <p>Loading QR code&hellip;</p>
+            </div>
+          </div>
+          <div style="background:var(--cream);border-radius:var(--radius);padding:14px 16px;font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:20px;text-align:left">
+            <strong>How to pay:</strong><br>
+            1. Open GPay / PhonePe / Paytm<br>
+            2. Tap "Scan QR" or "Pay"<br>
+            3. Scan the code above<br>
+            4. Enter the <strong>exact total</strong> amount<br>
+            5. Copy the UTR / Transaction ID
+          </div>
+
+          <div style="border-top:1px solid var(--border);padding-top:20px">
+            <h3 style="font-size:20px;margin-bottom:16px">Order Summary</h3>
+            <div id="order-items"></div>
+            <div class="summary-line" style="margin-top:8px"><span>Shipping</span><span id="shipping-line">—</span></div>
+            <div class="order-total-line"><span>Total</span><span id="order-total">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- SUCCESS MODAL -->
+<div id="success-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:600;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)">
+  <div style="background:white;border-radius:24px;padding:52px 40px;max-width:520px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.2)">
+    <div style="font-size:68px;margin-bottom:20px">&#9989;</div>
+    <h2 style="font-family:'Cinzel',serif;font-size:36px;margin-bottom:12px;color:var(--green-dark)">Order Placed!</h2>
+    <p style="color:var(--text-muted);margin-bottom:8px">Your order has been received successfully.</p>
+    <p id="order-id-display" style="font-family:'Cinzel',serif;font-size:15px;color:var(--green);font-weight:600;margin-bottom:16px;letter-spacing:1px"></p>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:36px;line-height:1.7">We will verify your payment and confirm the order shortly. Check your orders page for live status updates.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="orders.html" class="btn-primary">View My Orders</a>
+      <a href="index.html" class="btn-outline">Continue Shopping</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initAuth, auth } from "./auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { db } from "./firebase-config.js";
+import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getCart, clearCart, getCartTotal, updateCartBadge } from "./cart-utils.js";
+
+initAuth();
+updateCartBadge();
+
+const cart = getCart();
+if (!cart.length) { window.location.replace("cart.html"); }
+
+let currentUser = null;
+
+// Auth guard — redirect if not logged in
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.replace("login.html?redirect=checkout.html");
+    return;
+  }
+  currentUser = user;
+  // Pre-fill from user profile
+  const nameEl = document.getElementById("fname");
+  const emailEl = document.getElementById("email");
+  if (emailEl && !emailEl.value) emailEl.value = user.email || "";
+  if (nameEl && !nameEl.value && user.displayName) {
+    const parts = user.displayName.split(" ");
+    nameEl.value = parts[0] || "";
+    const lnameEl = document.getElementById("lname");
+    if (lnameEl) lnameEl.value = parts.slice(1).join(" ") || "";
+  }
+});
+
+// Load QR code from Firestore
+async function loadQR() {
+  const wrap = document.getElementById("qr-wrap");
+  try {
+    const snap = await getDoc(doc(db, "settings", "payment"));
+    if (snap.exists() && snap.data().qrUrl) {
+      wrap.innerHTML = `<img src="${snap.data().qrUrl}" alt="Scan to pay" style="max-width:220px;max-height:220px;display:block;margin:0 auto">`;
+    } else {
+      wrap.innerHTML = `<div class="qr-no-image"><span>&#128241;</span><p>QR code not set up yet.<br>Please contact us for payment details.</p></div>`;
+    }
+  } catch {
+    wrap.innerHTML = `<div class="qr-no-image"><span>&#128241;</span><p>Could not load QR code.<br>Please contact us.</p></div>`;
+  }
+}
+loadQR();
+
+// Render order summary
+const subtotal = getCartTotal();
+const shipping = subtotal >= 999 ? 0 : 99;
+const grandTotal = subtotal + shipping;
+
+document.getElementById("order-items").innerHTML = cart.map(i =>
+  `<div class="order-item-line"><span>${i.name} &times; ${i.qty}</span><span>&#8377;${(i.price * i.qty).toLocaleString("en-IN")}</span></div>`
+).join("");
+document.getElementById("shipping-line").textContent = shipping === 0 ? "Free" : "₹" + shipping;
+document.getElementById("order-total").innerHTML = `<strong>&#8377;${grandTotal.toLocaleString("en-IN")}</strong>`;
+
+// Helpers
+const errorBox = document.getElementById("error-box");
+function showError(msg) { errorBox.textContent = msg; errorBox.style.display = "block"; errorBox.scrollIntoView({ behavior: "smooth", block: "center" }); }
+function clearError() { errorBox.style.display = "none"; }
+
+// Place Order
+document.getElementById("place-order-btn").addEventListener("click", async () => {
+  clearError();
+
+  if (!currentUser) { window.location.replace("login.html?redirect=checkout.html"); return; }
+
+  const fname  = document.getElementById("fname").value.trim();
+  const lname  = document.getElementById("lname").value.trim();
+  const email  = document.getElementById("email").value.trim();
+  const phone  = document.getElementById("phone").value.trim();
+  const addr1  = document.getElementById("addr1").value.trim();
+  const addr2  = document.getElementById("addr2").value.trim();
+  const city   = document.getElementById("city").value.trim();
+  const state  = document.getElementById("state").value.trim();
+  const pincode = document.getElementById("pincode").value.trim();
+  const utr    = document.getElementById("utr").value.trim();
+
+  if (!fname)          { showError("Please enter your first name."); return; }
+  if (!email)          { showError("Please enter your email address."); return; }
+  if (!phone)          { showError("Please enter your phone number."); return; }
+  if (!/^\d{10}$/.test(phone)) { showError("Please enter a valid 10-digit phone number."); return; }
+  if (!addr1)          { showError("Please enter your street address."); return; }
+  if (!city)           { showError("Please enter your city."); return; }
+  if (!state)          { showError("Please enter your state."); return; }
+  if (!pincode)        { showError("Please enter your PIN code."); return; }
+  if (!/^\d{6}$/.test(pincode)) { showError("Please enter a valid 6-digit PIN code."); return; }
+  if (!utr)            { showError("Please enter your UTR / Transaction ID after completing the UPI payment."); return; }
+
+  const btn = document.getElementById("place-order-btn");
+  btn.textContent = "Placing order…";
+  btn.disabled = true;
+
+  try {
+    const orderRef = await addDoc(collection(db, "orders"), {
+      userId:       currentUser.uid,
+      userEmail:    currentUser.email,
+      customerName: `${fname} ${lname}`.trim(),
+      phone,
+      address: { line1: addr1, line2: addr2, city, state, pincode, country: "India" },
+      items:   cart.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, sub: i.sub })),
+      subtotal,
+      shipping,
+      total: grandTotal,
+      utr,
+      status:    "pending",
+      createdAt: serverTimestamp()
+    });
+
+    clearCart();
+    updateCartBadge();
+
+    document.getElementById("order-id-display").textContent = `Order ID: #${orderRef.id.slice(-8).toUpperCase()}`;
+    document.getElementById("success-modal").style.display = "flex";
+  } catch (err) {
+    showError("Failed to place order: " + err.message);
+    btn.textContent = "Place Order";
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

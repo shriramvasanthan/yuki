@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — Yuki</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Cinzel:wght@400;600;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav id="navbar">
+  <div class="nav-logo-text"><a href="index.html"><span class="logo-yuki">Yuki</span></a><span class="logo-tagline">Natural · Organic · Pure</span></div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-badge" id="cart-badge">0</span></a>
+    <div id="nav-auth"><a href="login.html" class="btn-nav-login">Login</a></div>
+    <div id="nav-user"><span id="nav-username" class="nav-username"></span><button class="btn-nav-logout" id="logout-btn">Logout</button></div>
+  </div>
+  <button class="nav-mobile-toggle" id="mobile-toggle">&#9776;</button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a><a href="products.html">Products</a>
+  <a href="cart.html">Cart</a><a href="orders.html">My Orders</a>
+  <a href="login.html" id="mobile-login">Login</a><a href="#" id="mobile-logout" style="display:none">Logout</a>
+</div>
+
+<main class="product-detail">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span>&#8250;</span>
+      <a href="products.html">Products</a><span>&#8250;</span>
+      <span id="breadcrumb-name">Product</span>
+    </div>
+    <div class="detail-grid" id="detail-content">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand"><span class="footer-logo">Yuki</span><p class="footer-tagline">Natural · Organic · Pure</p></div>
+    <div class="footer-col"><h4>Products</h4><ul><li><a href="products.html">All Products</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="orders.html">My Orders</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 Yuki Herbal Energy.</span><span class="footer-tagline-bottom">go greeeennnn.....</span></div>
+</footer>
+
+<script type="module">
+import { initAuth, showToast } from "./auth.js";
+import { getProductById } from "./products-data.js";
+import { addToCart, updateCartBadge } from "./cart-utils.js";
+
+initAuth();
+updateCartBadge();
+
+const id = new URLSearchParams(location.search).get("id");
+const p  = id ? getProductById(id) : null;
+const content = document.getElementById("detail-content");
+
+if (!p) {
+  content.innerHTML = `
+    <div class="text-center" style="grid-column:1/-1;padding:80px 0">
+      <p style="font-size:64px;margin-bottom:24px">&#128148;</p>
+      <h2 style="margin-bottom:12px">Product not found</h2>
+      <a href="products.html" class="btn-primary" style="margin-top:20px;display:inline-flex">Back to Products</a>
+    </div>`;
+} else {
+  document.title = `${p.name} — Yuki`;
+  document.getElementById("breadcrumb-name").textContent = p.name;
+
+  content.innerHTML = `
+    <div class="detail-img">${p.emoji}</div>
+    <div class="detail-info">
+      <div class="detail-cat">${p.categoryLabel}</div>
+      <h1 class="detail-name">${p.name}</h1>
+      <div class="detail-sub">${p.sub}</div>
+      <div class="detail-price">&#8377;${p.price.toLocaleString("en-IN")}</div>
+      <p class="detail-desc">${p.desc}</p>
+      <div class="qty-selector">
+        <span class="qty-label">Qty</span>
+        <div class="qty-control">
+          <button class="qty-btn" id="qty-minus">&#8722;</button>
+          <span class="qty-val" id="qty-val">1</span>
+          <button class="qty-btn" id="qty-plus">+</button>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <button class="btn-outline" id="add-cart-btn">Add to Cart</button>
+        <button class="btn-primary" id="buy-btn">Buy Now</button>
+      </div>
+      <div class="detail-features">
+        <div class="detail-feature"><div class="detail-feature-icon">&#127807;</div><div class="detail-feature-text"><h4>100% Natural</h4><p>No additives or preservatives</p></div></div>
+        <div class="detail-feature"><div class="detail-feature-icon">&#128666;</div><div class="detail-feature-text"><h4>Fast Delivery</h4><p>Ships within 2-3 business days</p></div></div>
+        <div class="detail-feature"><div class="detail-feature-icon">&#8617;&#65039;</div><div class="detail-feature-text"><h4>Easy Returns</h4><p>7-day return policy</p></div></div>
+        <div class="detail-feature"><div class="detail-feature-icon">&#128274;</div><div class="detail-feature-text"><h4>Secure Payment</h4><p>Safe QR-based checkout</p></div></div>
+      </div>
+    </div>`;
+
+  let qty = 1;
+  const qtyVal = document.getElementById("qty-val");
+
+  document.getElementById("qty-minus").addEventListener("click", () => {
+    if (qty > 1) { qty--; qtyVal.textContent = qty; }
+  });
+  document.getElementById("qty-plus").addEventListener("click", () => {
+    qty++; qtyVal.textContent = qty;
+  });
+  document.getElementById("add-cart-btn").addEventListener("click", () => {
+    addToCart({ id: p.id, name: p.name, price: p.price, emoji: p.emoji, sub: p.sub }, qty);
+    showToast(`${p.name} added to cart`);
+  });
+  document.getElementById("buy-btn").addEventListener("click", () => {
+    addToCart({ id: p.id, name: p.name, price: p.price, emoji: p.emoji, sub: p.sub }, qty);
+    window.location.href = "cart.html";
+  });
+}
+</script>
+</body>
+</html>

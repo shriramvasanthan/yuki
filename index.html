@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuki — Natural · Organic · Pure</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="nav-logo-text">
+    <a href="index.html"><span class="logo-yuki">Yuki</span></a>
+    <span class="logo-tagline">Natural · Organic · Pure</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon" title="Cart">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-badge" id="cart-badge">0</span>
+    </a>
+    <div id="nav-auth"><a href="login.html" class="btn-nav-login">Login</a></div>
+    <div id="nav-user">
+      <span id="nav-username" class="nav-username"></span>
+      <button class="btn-nav-logout" id="logout-btn">Logout</button>
+    </div>
+  </div>
+  <button class="nav-mobile-toggle" id="mobile-toggle">&#9776;</button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="about.html">About</a>
+  <a href="cart.html">Cart</a>
+  <a href="orders.html">My Orders</a>
+  <a href="login.html" id="mobile-login">Login</a>
+  <a href="#" id="mobile-logout" style="display:none">Logout</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">Ancient Wisdom · Modern Wellness</p>
+    <h1 class="hero-title">The Purest Salt<br><em>on Earth</em></h1>
+    <p class="hero-desc">Bamboo salt roasted up to 9 times in ancient Korean tradition. Each roast purifies and concentrates 70+ minerals for extraordinary wellness.</p>
+    <div class="hero-cta">
+      <a href="products.html" class="btn-primary">Shop Collection</a>
+      <a href="about.html" class="btn-outline">Our Story</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="salt-showcase">
+      <div class="salt-orb salt-orb-1"><div class="orb-label">1&times;<br><small>Roasted</small></div></div>
+      <div class="salt-orb salt-orb-5"><div class="orb-label">5&times;<br><small>Roasted</small></div></div>
+      <div class="salt-orb salt-orb-9"><div class="orb-label">9&times;<br><small>Roasted</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span>Bamboo Salt</span><span class="dot">&middot;</span>
+    <span>9&times; Roasted</span><span class="dot">&middot;</span>
+    <span>Organic Pure</span><span class="dot">&middot;</span>
+    <span>70+ Minerals</span><span class="dot">&middot;</span>
+    <span>Alkaline Rich</span><span class="dot">&middot;</span>
+    <span>Herbal Energy</span><span class="dot">&middot;</span>
+    <span>Natural Wellness</span><span class="dot">&middot;</span>
+    <span>Go Green</span><span class="dot">&middot;</span>
+    <span>Bamboo Salt</span><span class="dot">&middot;</span>
+    <span>9&times; Roasted</span><span class="dot">&middot;</span>
+    <span>Organic Pure</span><span class="dot">&middot;</span>
+    <span>70+ Minerals</span><span class="dot">&middot;</span>
+    <span>Alkaline Rich</span><span class="dot">&middot;</span>
+    <span>Herbal Energy</span><span class="dot">&middot;</span>
+    <span>Natural Wellness</span><span class="dot">&middot;</span>
+    <span>Go Green</span><span class="dot">&middot;</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">Why Yuki</p>
+      <h2 class="section-title">Crafted with Intention</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal" style="--delay:0s"><div class="feature-icon">&#127807;</div><h3>100% Natural</h3><p>No additives, no preservatives. Pure bamboo salt as nature intended, packed with trace minerals.</p></div>
+      <div class="feature-card reveal" style="--delay:0.1s"><div class="feature-icon">&#128293;</div><h3>Pine Fire Roasted</h3><p>Roasted at 1,300°C in bamboo tubes sealed with red clay — an ancient Korean tradition.</p></div>
+      <div class="feature-card reveal" style="--delay:0.2s"><div class="feature-icon">&#9879;&#65039;</div><h3>70+ Minerals</h3><p>Each roasting cycle concentrates essential trace minerals for optimal health and alkalinity.</p></div>
+      <div class="feature-card reveal" style="--delay:0.3s"><div class="feature-icon">&#127807;</div><h3>Eco Certified</h3><p>Sustainably sourced and packaged to honour our commitment to protecting the planet.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="featured-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">Best Sellers</p>
+      <h2 class="section-title">Premium Collections</h2>
+    </div>
+    <div class="products-grid" id="featured-products"></div>
+    <div class="section-cta reveal">
+      <a href="products.html" class="btn-primary">View All Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<section class="about-strip">
+  <div class="container about-strip-inner reveal">
+    <div class="about-strip-text">
+      <p class="section-eyebrow">Our Heritage</p>
+      <h2>Ancient salt, reborn <em>pure</em></h2>
+      <p>YUKI is an organic brand dedicated to providing natural, healthy, and sustainable products. We focus on pure ingredients such as bamboo salt, organic spices, herbal products, and natural wellness items. Our mission is to promote healthy living while protecting the planet.</p>
+      <a href="about.html" class="btn-outline" style="margin-top:28px;display:inline-flex">Learn More</a>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-n">9&times;</span><span class="stat-l">Max Roast</span></div>
+      <div class="stat"><span class="stat-n">70+</span><span class="stat-l">Minerals</span></div>
+      <div class="stat"><span class="stat-n">100%</span><span class="stat-l">Natural</span></div>
+      <div class="stat"><span class="stat-n">5&#9733;</span><span class="stat-l">Rated</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo">Yuki</span>
+      <p class="footer-tagline">Natural · Organic · Pure</p>
+      <p>Bringing ancient wisdom to modern wellness.</p>
+    </div>
+    <div class="footer-col"><h4>Products</h4><ul>
+      <li><a href="products.html?cat=bamboo-salt">Bamboo Salt</a></li>
+      <li><a href="products.html?cat=vegetable-salt">Vegetable Salt</a></li>
+      <li><a href="products.html?cat=bamboo-products">Bamboo Products</a></li>
+      <li><a href="products.html?cat=spices">Spices</a></li>
+      <li><a href="products.html?cat=nuts">Nuts</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Company</h4><ul>
+      <li><a href="about.html">About Yuki</a></li>
+      <li><a href="#">Sustainability</a></li>
+      <li><a href="#">Blog</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Support</h4><ul>
+      <li><a href="#">Contact Us</a></li>
+      <li><a href="orders.html">Track Order</a></li>
+      <li><a href="#">FAQ</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Yuki Herbal Energy. All rights reserved.</span>
+    <span class="footer-tagline-bottom">go greeeennnn.....</span>
+  </div>
+</footer>
+
+<script type="module" src="home.js"></script>
+</body>
+</html>

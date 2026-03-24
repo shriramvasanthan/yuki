@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Yuki</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=Cinzel:wght@400;600;900&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #f8fafc;
+    }
+
+    .badge-pending {
+      background: #fff8e6;
+      color: #b8880a;
+    }
+
+    .badge-confirmed {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .badge-shipped {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .badge-delivered {
+      background: #f0fff4;
+      color: #1a7a3a;
+    }
+
+    .badge-cancelled {
+      background: #fff0f0;
+      color: #c0392b;
+    }
+  </style>
+</head>
+
+<body class="admin-body">
+
+  <!-- LOGIN -->
+  <div id="admin-login" class="admin-login-page">
+    <div class="admin-login-card">
+      <div
+        style="font-family:'Cinzel',serif;font-size:32px;font-weight:900;color:var(--green-dark);letter-spacing:2px;margin-bottom:4px">
+        Yuki Admin</div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:36px">Sign in to manage your store</p>
+      <div class="auth-error" id="admin-error" style="margin-bottom:16px"></div>
+      <div class="form-group"><label>Admin Email</label><input type="email" class="form-control" id="admin-email"
+          placeholder="admin@yuki.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" class="form-control" id="admin-pass"
+          placeholder="Password"></div>
+      <button class="btn-primary btn-full" id="admin-login-btn">Sign In</button>
+      <p style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:20px">Accessible at
+        <strong>/admin.html</strong></p>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="admin-panel" style="display:none">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-logo">
+        <div class="logo-yuki">Yuki</div>
+        <p>Admin Panel</p>
+      </div>
+      <nav class="admin-nav">
+        <a onclick="showSection('dashboard')" class="active" id="nav-dashboard"><span class="nav-ico">📊</span>
+          Dashboard</a>
+        <a onclick="showSection('orders')" id="nav-orders"><span class="nav-ico">📦</span> Orders</a>
+        <a onclick="showSection('customers')" id="nav-customers"><span class="nav-ico">👥</span> Customers</a>
+        <a onclick="showSection('payment')" id="nav-payment"><span class="nav-ico">💳</span> Payment QR</a>
+        <a onclick="showSection('products')" id="nav-products"><span class="nav-ico">🌿</span> Products</a>
+        <a href="index.html" target="_blank"><span class="nav-ico">🌐</span> View Store</a>
+        <a onclick="adminLogout()" style="margin-top:auto"><span class="nav-ico">🚪</span> Logout</a>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <div class="admin-topbar">
+        <h1 id="page-title">Dashboard</h1>
+        <div class="admin-topbar-actions">
+          <span id="admin-user-name" style="font-size:14px;color:var(--text-muted)"></span>
+        </div>
+      </div>
+
+      <div class="admin-content">
+
+        <!-- DASHBOARD -->
+        <div class="admin-section active" id="section-dashboard">
+          <div class="admin-stats" id="dash-stats">
+            <div class="stat-card">
+              <div class="stat-ico">📦</div>
+              <div class="stat-val" id="stat-total-orders">—</div>
+              <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-ico">⏳</div>
+              <div class="stat-val" id="stat-pending">—</div>
+              <div class="stat-label">Pending Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-ico">💰</div>
+              <div class="stat-val" id="stat-revenue">—</div>
+              <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-ico">👥</div>
+              <div class="stat-val" id="stat-customers">—</div>
+              <div class="stat-label">Customers</div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2>Recent Orders</h2><button class="btn-ghost" onclick="showSection('orders')">View All</button>
+            </div>
+            <div id="recent-orders-table">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div class="admin-section" id="section-orders">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2>All Orders</h2>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <select class="form-control" id="status-filter" style="width:auto;padding:8px 16px"
+                  onchange="filterOrders()">
+                  <option value="">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div id="orders-table">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CUSTOMERS -->
+        <div class="admin-section" id="section-customers">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2>Customers</h2>
+            </div>
+            <div id="customers-table">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENT QR -->
+        <div class="admin-section" id="section-payment">
+          <div class="admin-card" style="max-width:700px">
+            <div class="admin-card-header">
+              <h2>Payment QR Code</h2>
+            </div>
+            <p style="font-size:15px;color:var(--text-muted);margin-bottom:32px">Upload a QR code that customers will
+              scan during checkout to make UPI payments. This will be displayed on the checkout page.</p>
+            <div id="current-qr-display"
+              style="text-align:center;margin-bottom:32px;padding:24px;background:var(--cream);border-radius:var(--radius-lg);border:1px solid var(--border)">
+              <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Current QR Code</p>
+              <div id="qr-current-img">
+                <p style="color:var(--text-light)">No QR code uploaded yet.</p>
+              </div>
+            </div>
+            <div class="qr-upload-area" id="qr-drop-area">
+              <div class="upload-icon">📷</div>
+              <h3>Upload New QR Code</h3>
+              <p>Click to select or drag & drop a QR code image<br><small style="color:var(--text-light)">PNG, JPG
+                  supported — max 5MB</small></p>
+              <input type="file" id="qr-file-input" accept="image/*" style="display:none">
+              <button class="btn-primary" onclick="document.getElementById('qr-file-input').click()">Choose
+                File</button>
+            </div>
+            <div id="qr-preview-wrap" style="display:none;text-align:center;margin-top:20px">
+              <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px">Preview:</p>
+              <img id="qr-preview" class="qr-preview" src="" alt="QR Preview">
+              <div style="margin-top:16px"><button class="btn-primary" id="upload-qr-btn">Save QR Code</button></div>
+            </div>
+            <div class="auth-error" id="qr-error" style="margin-top:16px"></div>
+            <div class="auth-success" id="qr-success" style="margin-top:16px"></div>
+          </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div class="admin-section" id="section-products">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2>Products Catalogue</h2>
+            </div>
+            <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px">Products are managed via the
+              <code>products-data.js</code> file. Below is the current catalogue for reference.</p>
+            <div id="products-list-admin"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER DETAIL MODAL -->
+  <div id="order-modal" style="display:none" class="order-detail-modal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2>Order Details</h2>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db, storage } from "./firebase-config.js";
+    import {
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      collection, getDocs, doc, updateDoc, getDoc,
+      orderBy, query, serverTimestamp, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    import { products } from "./products-data.js";
+
+    // ADMIN EMAILS — add your admin email(s) here
+    const ADMIN_EMAILS = ["venkatraji5757@gmail.com"];
+
+    let allOrders = [];
+    let allCustomers = [];
+
+    // ============ AUTH ============
+    onAuthStateChanged(auth, user => {
+      const email = user ? (user.email || "").toLowerCase() : "";
+      const isAdmin = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(email);
+
+      if (user && isAdmin) {
+        document.getElementById("admin-login").style.display = "none";
+        document.getElementById("admin-panel").style.display = "flex";
+        document.getElementById("admin-user-name").textContent = user.email;
+        loadDashboard();
+        loadCurrentQR();
+        renderProductsAdmin();
+      } else if (user) {
+        // Logged in but not admin
+        signOut(auth);
+        showAdminError("You don't have admin access.");
+      } else {
+        document.getElementById("admin-login").style.display = "flex";
+        document.getElementById("admin-panel").style.display = "none";
+      }
+    });
+
+    document.getElementById("admin-login-btn").addEventListener("click", async () => {
+      const email = document.getElementById("admin-email").value.trim();
+      const pass = document.getElementById("admin-pass").value;
+      if (!email || !pass) { showAdminError("Please enter email and password."); return; }
+      const btn = document.getElementById("admin-login-btn");
+      btn.textContent = "Signing in..."; btn.disabled = true;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        const msgs = { "auth/user-not-found": "Admin account not found.", "auth/wrong-password": "Incorrect password.", "auth/invalid-email": "Invalid email." };
+        showAdminError(msgs[e.code] || e.message);
+        btn.textContent = "Sign In"; btn.disabled = false;
+      }
+    });
+
+    function showAdminError(msg) {
+      const el = document.getElementById("admin-error");
+      el.textContent = msg; el.style.display = "block";
+    }
+
+    window.adminLogout = async function () {
+      await signOut(auth);
+    };
+
+    // ============ NAVIGATION ============
+    window.showSection = function (name) {
+      document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll(".admin-nav a").forEach(a => a.classList.remove("active"));
+      document.getElementById(`section-${name}`).classList.add("active");
+      document.getElementById(`nav-${name}`)?.classList.add("active");
+      document.getElementById("page-title").textContent = {
+        dashboard: "Dashboard", orders: "Orders", customers: "Customers",
+        payment: "Payment QR", products: "Products"
+      }[name];
+      if (name === "orders") loadOrders();
+      if (name === "customers") loadCustomers();
+    };
+
+    // ============ DASHBOARD ============
+    async function loadDashboard() {
+      try {
+        const [ordersSnap, usersSnap] = await Promise.all([
+          getDocs(collection(db, "orders")),
+          getDocs(collection(db, "users"))
+        ]);
+        allOrders = ordersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const pending = allOrders.filter(o => o.status === "pending").length;
+        const revenue = allOrders.filter(o => o.status !== "cancelled").reduce((s, o) => s + (o.total || 0), 0);
+
+        document.getElementById("stat-total-orders").textContent = allOrders.length;
+        document.getElementById("stat-pending").textContent = pending;
+        document.getElementById("stat-revenue").textContent = "₹" + revenue.toLocaleString("en-IN");
+        document.getElementById("stat-customers").textContent = usersSnap.size;
+
+        const recent = [...allOrders].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)).slice(0, 10);
+        renderOrdersTable("recent-orders-table", recent);
+      } catch (e) {
+        document.getElementById("recent-orders-table").innerHTML = `<p style="color:var(--text-muted);padding:20px">Error: ${e.message}</p>`;
+      }
+    }
+
+    // ============ ORDERS ============
+    async function loadOrders() {
+      const el = document.getElementById("orders-table");
+      el.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+      try {
+        const snap = await getDocs(query(collection(db, "orders"), orderBy("createdAt", "desc")));
+        allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderOrdersTable("orders-table", allOrders);
+      } catch (e) {
+        el.innerHTML = `<p style="color:var(--text-muted);padding:20px">Error: ${e.message}</p>`;
+      }
+    }
+
+    window.filterOrders = function () {
+      const status = document.getElementById("status-filter").value;
+      const filtered = status ? allOrders.filter(o => o.status === status) : allOrders;
+      renderOrdersTable("orders-table", filtered);
+    };
+
+    function renderOrdersTable(targetId, orders) {
+      const el = document.getElementById(targetId);
+      if (!orders.length) {
+        el.innerHTML = `<p style="text-align:center;padding:40px;color:var(--text-muted)">No orders found.</p>`;
+        return;
+      }
+      el.innerHTML = `
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${orders.map(o => {
+        const date = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—";
+        return `
+            <tr>
+              <td><strong>#${o.id.slice(-8).toUpperCase()}</strong></td>
+              <td>${o.customerName || o.userEmail || "—"}</td>
+              <td>${(o.items || []).length} item(s)</td>
+              <td><strong>₹${(o.total || 0).toLocaleString("en-IN")}</strong></td>
+              <td>${date}</td>
+              <td>
+                <select class="form-control" style="padding:6px 10px;font-size:12px;width:auto" onchange="updateOrderStatus('${o.id}', this.value)">
+                  <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                  <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                  <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                  <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                  <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                </select>
+              </td>
+              <td><button class="btn-ghost" style="padding:6px 14px;font-size:12px" onclick="viewOrder('${o.id}')">View</button></td>
+            </tr>
+          `;
+      }).join("")}
+      </tbody>
+    </table>
+    </div>
+  `;
+    }
+
+    window.updateOrderStatus = async function (orderId, status) {
+      try {
+        await updateDoc(doc(db, "orders", orderId), { status, updatedAt: serverTimestamp() });
+        // Update local
+        const idx = allOrders.findIndex(o => o.id === orderId);
+        if (idx >= 0) allOrders[idx].status = status;
+        showAdminToast(`Order status updated to ${status}`);
+      } catch (e) {
+        showAdminToast("Error updating status: " + e.message, "error");
+      }
+    };
+
+    window.viewOrder = async function (orderId) {
+      const order = allOrders.find(o => o.id === orderId) || {};
+      const modal = document.getElementById("order-modal");
+      const content = document.getElementById("modal-content");
+      const date = order.createdAt ? new Date(order.createdAt.seconds * 1000).toLocaleString("en-IN") : "—";
+      content.innerHTML = `
+    <div class="info-grid">
+      <div class="info-field"><label>Order ID</label><span>#${orderId.slice(-8).toUpperCase()}</span></div>
+      <div class="info-field"><label>Date</label><span>${date}</span></div>
+      <div class="info-field"><label>Customer</label><span>${order.customerName || "—"}</span></div>
+      <div class="info-field"><label>Email</label><span>${order.userEmail || "—"}</span></div>
+      <div class="info-field"><label>Phone</label><span>${order.phone || "—"}</span></div>
+      <div class="info-field"><label>Status</label><span class="badge badge-${order.status || 'pending'}">${order.status || 'pending'}</span></div>
+    </div>
+    <div style="margin-bottom:20px">
+      <strong>Delivery Address:</strong><br>
+      <span style="color:var(--text-muted)">${order.address ? `${order.address.line1}${order.address.line2 ? ', ' + order.address.line2 : ''}, ${order.address.city}, ${order.address.state} - ${order.address.pincode}` : "—"}</span>
+    </div>
+    <div style="margin-bottom:20px">
+      <strong>UTR / Transaction ID:</strong> <span style="color:var(--green)">${order.utr || "—"}</span>
+    </div>
+    <div>
+      <strong>Items:</strong>
+      <table style="margin-top:10px">
+        <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+        <tbody>
+          ${(order.items || []).map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>₹${i.price.toLocaleString("en-IN")}</td><td>₹${(i.price * i.qty).toLocaleString("en-IN")}</td></tr>`).join("")}
+          <tr><td colspan="3"><strong>Shipping</strong></td><td>${order.shipping === 0 ? 'Free' : '₹' + (order.shipping || 0)}</td></tr>
+          <tr><td colspan="3"><strong>Total</strong></td><td><strong>₹${(order.total || 0).toLocaleString("en-IN")}</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+      modal.style.display = "flex";
+    };
+
+    window.closeModal = function () {
+      document.getElementById("order-modal").style.display = "none";
+    };
+
+    // ============ CUSTOMERS ============
+    async function loadCustomers() {
+      const el = document.getElementById("customers-table");
+      el.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+      try {
+        const snap = await getDocs(collection(db, "users"));
+        const users = snap.docs.map(d => d.data());
+        allCustomers = users;
+        if (!users.length) {
+          el.innerHTML = `<p style="text-align:center;padding:40px;color:var(--text-muted)">No customers yet.</p>`;
+          return;
+        }
+        el.innerHTML = `
+      <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Orders</th></tr></thead>
+        <tbody>
+          ${users.map(u => {
+          const date = u.createdAt ? new Date(u.createdAt.seconds * 1000).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—";
+          const orderCount = allOrders.filter(o => o.userId === u.uid).length;
+          return `<tr><td>${u.name || "—"}</td><td>${u.email}</td><td>${date}</td><td>${orderCount}</td></tr>`;
+        }).join("")}
+        </tbody>
+      </table>
+      </div>
+    `;
+      } catch (e) {
+        el.innerHTML = `<p style="color:var(--text-muted);padding:20px">Error: ${e.message}</p>`;
+      }
+    }
+
+    // ============ QR CODE ============
+    async function loadCurrentQR() {
+      try {
+        const snap = await getDoc(doc(db, "settings", "payment"));
+        const el = document.getElementById("qr-current-img");
+        if (snap.exists() && snap.data().qrUrl) {
+          el.innerHTML = `<img src="${snap.data().qrUrl}" style="max-width:200px;max-height:200px;border-radius:12px">`;
+        } else {
+          el.innerHTML = `<p style="color:var(--text-light)">No QR code uploaded yet.</p>`;
+        }
+      } catch (e) {
+        console.warn("QR load:", e);
+      }
+    }
+
+    const qrInput = document.getElementById("qr-file-input");
+    const qrPreview = document.getElementById("qr-preview");
+    const qrPreviewWrap = document.getElementById("qr-preview-wrap");
+    let qrFile = null;
+
+    qrInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        document.getElementById("qr-error").textContent = "File is too large. Max 5MB.";
+        document.getElementById("qr-error").style.display = "block";
+        return;
+      }
+      qrFile = file;
+      const reader = new FileReader();
+      reader.onload = (r) => { qrPreview.src = r.target.result; qrPreviewWrap.style.display = "block"; };
+      reader.readAsDataURL(file);
+      document.getElementById("qr-error").style.display = "none";
+    });
+
+    const dropArea = document.getElementById("qr-drop-area");
+    dropArea.addEventListener("dragover", e => { e.preventDefault(); dropArea.style.borderColor = "var(--green)"; });
+    dropArea.addEventListener("dragleave", () => { dropArea.style.borderColor = ""; });
+    dropArea.addEventListener("drop", e => {
+      e.preventDefault(); dropArea.style.borderColor = "";
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) {
+        qrFile = file;
+        const reader = new FileReader();
+        reader.onload = r => { qrPreview.src = r.target.result; qrPreviewWrap.style.display = "block"; };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("upload-qr-btn").addEventListener("click", async () => {
+      if (!qrFile) return;
+      const btn = document.getElementById("upload-qr-btn");
+      const errEl = document.getElementById("qr-error");
+      const sucEl = document.getElementById("qr-success");
+      btn.textContent = "Uploading..."; btn.disabled = true;
+      errEl.style.display = "none"; sucEl.style.display = "none";
+      try {
+        const storageRef = ref(storage, `settings/payment-qr-${Date.now()}.${qrFile.name.split(".").pop()}`);
+        const snap = await uploadBytes(storageRef, qrFile);
+        const url = await getDownloadURL(snap.ref);
+        await setDoc(doc(db, "settings", "payment"), { qrUrl: url, updatedAt: serverTimestamp() }, { merge: true });
+        sucEl.textContent = "QR code uploaded successfully! It is now live on the checkout page.";
+        sucEl.style.display = "block";
+        document.getElementById("qr-current-img").innerHTML = `<img src="${url}" style="max-width:200px;max-height:200px;border-radius:12px">`;
+      } catch (e) {
+        errEl.textContent = "Upload failed: " + e.message;
+        errEl.style.display = "block";
+      }
+      btn.textContent = "Save QR Code"; btn.disabled = false;
+    });
+
+    // ============ PRODUCTS ============
+    function renderProductsAdmin() {
+      const el = document.getElementById("products-list-admin");
+      if (!el) return;
+      el.innerHTML = `
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Emoji</th><th>Name</th><th>Category</th><th>Price</th></tr></thead>
+      <tbody>
+        ${products.map(p => `<tr><td>${p.emoji}</td><td>${p.name}</td><td>${p.categoryLabel}</td><td>₹${p.price.toLocaleString("en-IN")}</td></tr>`).join("")}
+      </tbody>
+    </table>
+    </div>
+  `;
+    }
+
+    // Toast
+    function showAdminToast(msg, type = "success") {
+      let container = document.getElementById("toast-container");
+      if (!container) { container = document.createElement("div"); container.id = "toast-container"; document.body.appendChild(container); }
+      const t = document.createElement("div");
+      t.className = `toast ${type}`; t.innerHTML = `<span>${type === "success" ? "✓" : "✕"}</span> ${msg}`;
+      container.appendChild(t);
+      requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add("show")));
+      setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 500); }, 3500);
+    }
+  </script>
+</body>
+
+</html>

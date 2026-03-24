@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders — Yuki</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Cinzel:wght@400;600;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav id="navbar">
+  <div class="nav-logo-text"><a href="index.html"><span class="logo-yuki">Yuki</span></a><span class="logo-tagline">Natural · Organic · Pure</span></div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-badge" id="cart-badge">0</span>
+    </a>
+    <div id="nav-auth"><a href="login.html" class="btn-nav-login">Login</a></div>
+    <div id="nav-user"><span id="nav-username" class="nav-username"></span><button class="btn-nav-logout" id="logout-btn">Logout</button></div>
+  </div>
+  <button class="nav-mobile-toggle" id="mobile-toggle">&#9776;</button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="about.html">About</a>
+  <a href="cart.html">Cart</a>
+  <a href="orders.html">My Orders</a>
+  <a href="login.html" id="mobile-login">Login</a>
+  <a href="#" id="mobile-logout" style="display:none">Logout</a>
+</div>
+
+<main class="orders-page">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>&#8250;</span><span>My Orders</span></div>
+    <h1>My Orders</h1>
+    <div id="orders-content"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand"><span class="footer-logo">Yuki</span><p class="footer-tagline">Natural · Organic · Pure</p></div>
+    <div class="footer-col"><h4>Products</h4><ul><li><a href="products.html">All Products</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Contact</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 Yuki Herbal Energy.</span><span class="footer-tagline-bottom">go greeeennnn.....</span></div>
+</footer>
+
+<script type="module">
+import { initAuth, auth } from "./auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { db } from "./firebase-config.js";
+import { collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { updateCartBadge } from "./cart-utils.js";
+
+initAuth();
+updateCartBadge();
+
+const STATUS_LABELS = {
+  pending:   "Pending",
+  confirmed: "Confirmed",
+  shipped:   "Shipped",
+  delivered: "Delivered",
+  cancelled: "Cancelled"
+};
+
+function fmtDate(ts) {
+  if (!ts) return "—";
+  return new Date(ts.seconds * 1000).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}
+
+onAuthStateChanged(auth, async user => {
+  const el = document.getElementById("orders-content");
+  if (!user) {
+    window.location.replace("login.html?redirect=orders.html");
+    return;
+  }
+
+  try {
+    const q    = query(collection(db, "orders"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      el.innerHTML = `
+        <div class="text-center" style="padding:80px 0">
+          <div style="font-size:64px;margin-bottom:24px">&#128230;</div>
+          <h2 style="margin-bottom:12px">No orders yet</h2>
+          <p style="color:var(--text-muted);margin-bottom:32px">Your order history will appear here once you place an order.</p>
+          <a href="products.html" class="btn-primary" style="display:inline-flex">Start Shopping</a>
+        </div>`;
+      return;
+    }
+
+    el.innerHTML = snap.docs.map(d => {
+      const o    = d.data();
+      const date = fmtDate(o.createdAt);
+      const status = o.status || "pending";
+      return `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-id">Order #${d.id.slice(-8).toUpperCase()}</div>
+              <div class="order-date">${date}</div>
+            </div>
+            <span class="order-status status-${status}">${STATUS_LABELS[status] || status}</span>
+          </div>
+          <div class="order-items-list">
+            ${(o.items || []).map(i =>
+              `<div class="order-item-row">
+                <span>${i.name} &times; ${i.qty}</span>
+                <span>&#8377;${(i.price * i.qty).toLocaleString("en-IN")}</span>
+              </div>`
+            ).join("")}
+          </div>
+          <div class="order-total-row">
+            <span>Total</span>
+            <span>&#8377;${(o.total || 0).toLocaleString("en-IN")}</span>
+          </div>
+          <div style="margin-top:16px;font-size:13px;color:var(--text-muted)">
+            <strong>Shipping to:</strong>
+            ${o.address
+              ? `${o.address.line1}${o.address.line2 ? ", " + o.address.line2 : ""}, ${o.address.city}, ${o.address.state} &ndash; ${o.address.pincode}`
+              : "Address not available"}
+          </div>
+          ${o.phone ? `<div style="margin-top:4px;font-size:13px;color:var(--text-muted)"><strong>Phone:</strong> ${o.phone}</div>` : ""}
+          ${o.utr   ? `<div style="margin-top:4px;font-size:13px;color:var(--text-muted)"><strong>UTR:</strong> ${o.utr}</div>` : ""}
+        </div>`;
+    }).join("");
+
+  } catch (e) {
+    el.innerHTML = `
+      <div class="text-center" style="padding:60px 0;color:var(--text-muted)">
+        <p>Failed to load orders: ${e.message}</p>
+        <button class="btn-ghost" style="margin-top:16px" onclick="location.reload()">Try Again</button>
+      </div>`;
+  }
+});
+</script>
+</body>
+</html>

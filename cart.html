@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart — Yuki</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Cinzel:wght@400;600;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav id="navbar">
+  <div class="nav-logo-text"><a href="index.html"><span class="logo-yuki">Yuki</span></a><span class="logo-tagline">Natural · Organic · Pure</span></div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="products.html">Products</a></li><li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-badge" id="cart-badge">0</span></a>
+    <div id="nav-auth"><a href="login.html" class="btn-nav-login">Login</a></div>
+    <div id="nav-user"><span id="nav-username" class="nav-username"></span><button class="btn-nav-logout" id="logout-btn">Logout</button></div>
+  </div>
+  <button class="nav-mobile-toggle" id="mobile-toggle">&#9776;</button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a><a href="products.html">Products</a><a href="orders.html">My Orders</a>
+  <a href="login.html" id="mobile-login">Login</a><a href="#" id="mobile-logout" style="display:none">Logout</a>
+</div>
+
+<main class="cart-page">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>&#8250;</span><span>Cart</span></div>
+    <h1>Shopping Cart</h1>
+    <div id="cart-content"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand"><span class="footer-logo">Yuki</span><p class="footer-tagline">Natural · Organic · Pure</p></div>
+    <div class="footer-col"><h4>Products</h4><ul><li><a href="products.html">All Products</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Contact</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 Yuki Herbal Energy.</span><span class="footer-tagline-bottom">go greeeennnn.....</span></div>
+</footer>
+
+<script type="module">
+import { initAuth, showToast, auth } from "./auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getCart, removeFromCart, updateQty, getCartTotal, updateCartBadge } from "./cart-utils.js";
+
+initAuth();
+
+function render() {
+  updateCartBadge();
+  const cart = getCart();
+  const el   = document.getElementById("cart-content");
+
+  if (!cart.length) {
+    el.innerHTML = `
+      <div class="cart-empty-state">
+        <div class="empty-icon">&#128722;</div>
+        <h2>Your cart is empty</h2>
+        <p>Add some products to get started</p>
+        <a href="products.html" class="btn-primary" style="display:inline-flex;margin-top:8px">Shop Now</a>
+      </div>`;
+    return;
+  }
+
+  const subtotal = getCartTotal();
+  const shipping = subtotal >= 999 ? 0 : 99;
+  const total    = subtotal + shipping;
+  const itemCount = cart.reduce((s, i) => s + i.qty, 0);
+
+  el.innerHTML = `
+    <div class="cart-layout">
+      <div class="cart-items-list">
+        ${cart.map(item => `
+          <div class="cart-item" data-id="${item.id}">
+            <div class="cart-item-emoji">${item.emoji}</div>
+            <div class="cart-item-details">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-sub">${item.sub}</div>
+              <div class="cart-item-controls">
+                <div class="qty-control">
+                  <button class="qty-btn qty-dec">&#8722;</button>
+                  <span class="qty-val">${item.qty}</span>
+                  <button class="qty-btn qty-inc">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="cart-item-price">&#8377;${(item.price * item.qty).toLocaleString("en-IN")}</div>
+            <button class="cart-item-remove" title="Remove item">&#10005;</button>
+          </div>`).join("")}
+      </div>
+      <div class="cart-summary">
+        <h3>Order Summary</h3>
+        <div class="summary-line"><span>Subtotal (${itemCount} item${itemCount !== 1 ? "s" : ""})</span><span>&#8377;${subtotal.toLocaleString("en-IN")}</span></div>
+        <div class="summary-line"><span>Shipping</span><span>${shipping === 0 ? '<span style="color:var(--green);font-weight:600">Free</span>' : "&#8377;" + shipping}</span></div>
+        ${shipping > 0 ? `<p style="font-size:12px;color:var(--green);margin:-4px 0 8px">Add &#8377;${(999 - subtotal).toLocaleString("en-IN")} more for free shipping</p>` : ""}
+        <div class="summary-total"><span>Total</span><span>&#8377;${total.toLocaleString("en-IN")}</span></div>
+        <button class="btn-primary" id="checkout-btn" style="width:100%;justify-content:center;margin-top:24px;font-size:15px;padding:16px">Proceed to Checkout</button>
+        <a href="products.html" class="btn-ghost" style="width:100%;justify-content:center;margin-top:12px;display:flex;padding:12px;text-align:center">Continue Shopping</a>
+      </div>
+    </div>`;
+
+  // Qty +/- and remove — event delegation on the items list
+  el.querySelector(".cart-items-list").addEventListener("click", e => {
+    const row = e.target.closest(".cart-item");
+    if (!row) return;
+    const id = row.dataset.id;
+    const item = cart.find(i => i.id === id);
+    if (!item) return;
+
+    if (e.target.classList.contains("qty-dec")) {
+      updateQty(id, item.qty - 1);
+      render();
+    } else if (e.target.classList.contains("qty-inc")) {
+      updateQty(id, item.qty + 1);
+      render();
+    } else if (e.target.classList.contains("cart-item-remove")) {
+      removeFromCart(id);
+      showToast("Item removed", "error");
+      render();
+    }
+  });
+
+  // Checkout button
+  document.getElementById("checkout-btn").addEventListener("click", () => {
+    onAuthStateChanged(auth, user => {
+      if (user) window.location.href = "checkout.html";
+      else      window.location.href = "login.html?redirect=checkout.html";
+    });
+  });
+}
+
+render();
+</script>
+</body>
+</html>

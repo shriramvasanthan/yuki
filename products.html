@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products — Yuki</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Cinzel:wght@400;600;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav id="navbar">
+  <div class="nav-logo-text"><a href="index.html"><span class="logo-yuki">Yuki</span></a><span class="logo-tagline">Natural · Organic · Pure</span></div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="products.html" class="active">Products</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="cart.html" class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cart-badge" id="cart-badge">0</span></a>
+    <div id="nav-auth"><a href="login.html" class="btn-nav-login">Login</a></div>
+    <div id="nav-user"><span id="nav-username" class="nav-username"></span><button class="btn-nav-logout" id="logout-btn">Logout</button></div>
+  </div>
+  <button class="nav-mobile-toggle" id="mobile-toggle">&#9776;</button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a><a href="products.html">Products</a><a href="about.html">About</a>
+  <a href="cart.html">Cart</a><a href="orders.html">My Orders</a>
+  <a href="login.html" id="mobile-login">Login</a><a href="#" id="mobile-logout" style="display:none">Logout</a>
+</div>
+
+<main class="products-page">
+  <div class="products-hero">
+    <div class="container">
+      <p class="section-eyebrow">Our Collections</p>
+      <h1>Natural Products</h1>
+      <p>Handpicked organic wellness products for a healthier life</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="filter-tabs" id="filter-tabs"></div>
+    <div class="products-grid" id="products-grid"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand"><span class="footer-logo">Yuki</span><p class="footer-tagline">Natural · Organic · Pure</p></div>
+    <div class="footer-col"><h4>Products</h4><ul><li><a href="products.html">All Products</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="orders.html">My Orders</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 Yuki Herbal Energy.</span><span class="footer-tagline-bottom">go greeeennnn.....</span></div>
+</footer>
+
+<script type="module">
+import { initAuth, showToast } from "./auth.js";
+import { products, categories } from "./products-data.js";
+import { addToCart, updateCartBadge } from "./cart-utils.js";
+
+initAuth();
+updateCartBadge();
+
+const params = new URLSearchParams(location.search);
+let activeCategory = params.get("cat") || "all";
+
+const tabsEl = document.getElementById("filter-tabs");
+const gridEl = document.getElementById("products-grid");
+
+function renderTabs() {
+  tabsEl.innerHTML = categories.map(c =>
+    `<button class="filter-tab${c.id === activeCategory ? " active" : ""}" data-cat="${c.id}">${c.label}</button>`
+  ).join("");
+  tabsEl.querySelectorAll(".filter-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeCategory = btn.dataset.cat;
+      history.replaceState(null, "", activeCategory === "all" ? "products.html" : `products.html?cat=${activeCategory}`);
+      renderTabs();
+      renderGrid();
+    });
+  });
+}
+
+function renderGrid() {
+  const filtered = activeCategory === "all" ? products : products.filter(p => p.category === activeCategory);
+  if (!filtered.length) {
+    gridEl.innerHTML = `<p class="text-center" style="grid-column:1/-1;padding:80px 0;color:var(--text-muted)">No products found.</p>`;
+    return;
+  }
+  gridEl.innerHTML = filtered.map(p => `
+    <div class="product-card">
+      <a href="product.html?id=${p.id}">
+        <div class="product-img-wrap">
+          <div class="product-img-emoji">${p.emoji}</div>
+          ${p.badge ? `<span class="product-badge${p.badge === "Premium" ? " premium" : ""}">${p.badge}</span>` : ""}
+        </div>
+      </a>
+      <div class="product-info">
+        <div class="product-cat">${p.categoryLabel}</div>
+        <a href="product.html?id=${p.id}"><div class="product-name">${p.name}</div></a>
+        <div class="product-sub">${p.sub}</div>
+        <div class="product-price">&#8377;${p.price.toLocaleString("en-IN")}</div>
+        <div class="product-actions">
+          <button class="btn-add-cart" data-id="${p.id}">Add to Cart</button>
+          <button class="btn-buy-now" data-id="${p.id}">Buy Now</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  gridEl.querySelectorAll(".btn-add-cart").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const p = products.find(x => x.id === btn.dataset.id);
+      if (p) { addToCart({ id: p.id, name: p.name, price: p.price, emoji: p.emoji, sub: p.sub }); showToast(`${p.name} added to cart`); }
+    });
+  });
+  gridEl.querySelectorAll(".btn-buy-now").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const p = products.find(x => x.id === btn.dataset.id);
+      if (p) { addToCart({ id: p.id, name: p.name, price: p.price, emoji: p.emoji, sub: p.sub }); window.location.href = "cart.html"; }
+    });
+  });
+}
+
+renderTabs();
+renderGrid();
+</script>
+</body>
+</html>
